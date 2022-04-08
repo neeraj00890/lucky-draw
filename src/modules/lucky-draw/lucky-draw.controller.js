@@ -6,10 +6,10 @@ const messages = require("../common/response-messages");
 
 const { initializeWinningPrize, redeemPrize } = require("./lucky-draw.service");
 
-router.get("/init", async (req, res, next) => {
+router.post("/init", async (req, res, next) => {
   try {
-    await initializeWinningPrize();
-    return res.send({ message: messages.SUCCESS_INIT_SCRIPT });
+   const data = await initializeWinningPrize();
+    return res.send({ message: data.message });
   } catch (error) {
     return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send({ message: error.message });
   }

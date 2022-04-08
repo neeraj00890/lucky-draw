@@ -1,6 +1,7 @@
 const { getRandomNumber, getRandomNumberFromArray } = require("../common/common.utils");
 
 const { NUMBER_THOUSAND, WINNING_TYPES } = require("../common/common-constants");
+const messages = require("../common/response-messages");
 
 const WinningPrice = require("./winning-prize.model");
 const LuckydrawRedemption = require("./lucky-draw-redemption.model");
@@ -65,8 +66,14 @@ async function handleBrownWinner(address, winningPrizes, randomNumber) {
 }
 
 exports.initializeWinningPrize = async function () {
-  const  intialCount = await WinningPrice.countDocuments({});
-  if(intialCount > 0) return;
+  const  initialCount = await WinningPrice.countDocuments({});
+  console.log(initialCount)
+  if(initialCount > 0) {
+    return {
+      message: messages.DATA_EXISTS
+    }
+  }
+   
   const goldPrizes = getGoldList();
   const silverPrizes = getSilverList(goldPrizes);
   const brownPrizes = getBrownList([...silverPrizes, ...goldPrizes]);
@@ -78,6 +85,10 @@ exports.initializeWinningPrize = async function () {
     availableSilverPrizes: silverPrizes,
     availablebrownPrizes: brownPrizes
   });
+
+  return {
+    message: messages.SUCCESS_INIT_SCRIPT
+  }
 };
 
 exports.redeemPrize = async function (address) {
