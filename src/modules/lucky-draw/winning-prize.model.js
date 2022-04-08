@@ -3,15 +3,18 @@ const mongoose = require("mongoose");
 const winningPrizeSchema = new mongoose.Schema({
   goldPrizes: {
     type: [String],
-    default: []
+    default: [],
+    immutable: true
   },
   silverPrizes: {
     type: [String],
-    default: []
+    default: [],
+    immutable: true
   },
   brownPrizes: {
     type: [String],
-    default: []
+    default: [],
+    immutable: true
   },
   availableGoldPrizes: {
     type: [String],
