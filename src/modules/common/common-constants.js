@@ -1,0 +1,8 @@
+exports.NUMBER_THOUSAND = 1000;
+exports.HTTP_STATUS = {
+    OK: 200,
+    INTERNAL_SERVER_ERROR: 500
+}
+exports.WINNING_TYPES = {
+   SILVER : "SILVER", GOLD: "GOLD", BROWN: "BROWN"
+}
