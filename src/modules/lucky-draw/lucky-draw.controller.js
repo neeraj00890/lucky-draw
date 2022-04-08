@@ -2,11 +2,10 @@ const express = require("express");
 
 const router = express.Router();
 const { HTTP_STATUS } = require("../common/common-constants");
-const messages = require("../common/response-messages");
 
 const { initializeWinningPrize, redeemPrize } = require("./lucky-draw.service");
 
-router.post("/init", async (req, res, next) => {
+router.post("/init",  async (req, res, next) => {
   try {
    const data = await initializeWinningPrize();
     return res.send({ message: data.message });
