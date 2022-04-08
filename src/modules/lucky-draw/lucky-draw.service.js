@@ -67,7 +67,6 @@ async function handleBrownWinner(address, winningPrizes, randomNumber) {
 
 exports.initializeWinningPrize = async function () {
   const  initialCount = await WinningPrice.countDocuments({});
-  console.log(initialCount)
   if(initialCount > 0) {
     return {
       message: messages.DATA_EXISTS
