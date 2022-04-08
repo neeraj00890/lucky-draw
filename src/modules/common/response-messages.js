@@ -1,1 +1,1 @@
-exports.SUCCESS_INIT_SCRIPT = "Initial data imported successfully."
+exports.SUCCESS_INIT_SCRIPT = "Initial data imported successfully.";
