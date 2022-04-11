@@ -7,3 +7,5 @@ exports.HTTP_STATUS = {
 exports.WINNING_TYPES = {
   SILVER: "SILVER", GOLD: "GOLD", BROWN: "BRONZE"
 };
+
+exports.EMPTY_STRING = "";

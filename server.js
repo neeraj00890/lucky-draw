@@ -10,17 +10,28 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json())
 const unProtectedRoutes = ["/api/auth/token"]
-
 app.use((req, res, next) => {
     if(unProtectedRoutes.includes(req.url)) {
         next();
     } else {
         verifyTokenMiddleware(req, res, next);
     }
-})
-app.use("/api/auth", authControler)
+});
 
+app.use("/api/auth", authControler)
 app.use("/api/lucky-draw", luckydrawControler)
+
+app.use((error, req, res, next) => {
+    if (error && error.name === "ApplicationError") {
+      error.path = error.path ? error.path : req.url;
+      return res.status(error.httpCode).send(error);
+    }
+    if (error) {
+      return res.status(error.status).send(error);
+    }
+    return next();
+  });
+  
 
 app.listen(PORT,() => {
     console.log(`Server listening on ${PORT}`)
