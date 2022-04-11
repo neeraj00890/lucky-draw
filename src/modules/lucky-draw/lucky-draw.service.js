@@ -3,7 +3,7 @@ const { getRandomNumber, getRandomNumberFromArray } = require("../common/common.
 const { NUMBER_THOUSAND, WINNING_TYPES } = require("../common/common-constants");
 const messages = require("../common/response-messages");
 
-const WinningPrice = require("./winning-prize.model");
+const WinningPrize = require("./winning-prize.model");
 const LuckydrawRedemption = require("./lucky-draw-redemption.model");
 
 function getGoldList() {
@@ -66,7 +66,7 @@ async function handleBrownWinner(address, winningPrizes, randomNumber) {
 }
 
 exports.initializeWinningPrize = async function () {
-  const  initialCount = await WinningPrice.countDocuments({});
+  const  initialCount = await WinningPrize.countDocuments({});
   if(initialCount > 0) {
     return {
       message: messages.DATA_EXISTS
@@ -76,7 +76,7 @@ exports.initializeWinningPrize = async function () {
   const goldPrizes = getGoldList();
   const silverPrizes = getSilverList(goldPrizes);
   const brownPrizes = getBrownList([...silverPrizes, ...goldPrizes]);
-  await WinningPrice.create({
+  await WinningPrize.create({
     goldPrizes,
     silverPrizes,
     brownPrizes,
@@ -92,7 +92,7 @@ exports.initializeWinningPrize = async function () {
 
 exports.redeemPrize = async function (address) {
   let returnObject = {};
-  const winningPrizes = await WinningPrice.findOne({});
+  const winningPrizes = await WinningPrize.findOne({});
   const totalAvailableNumbers = [...winningPrizes.availableGoldPrizes, ...winningPrizes.availableSilverPrizes, ...winningPrizes.availablebrownPrizes];
   if(totalAvailableNumbers.length) {
     const randomNumber = getRandomNumberFromArray(totalAvailableNumbers);

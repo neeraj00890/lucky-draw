@@ -2,9 +2,9 @@ const express = require("express");
 const app = express();
 const dotEnv = require("dotenv");
 const cors = require("cors");
-dotEnv.config()
+dotEnv.config();
 const {connectDatabase} = require("./src/modules/database/database-connection");
-const luckydrawController = require("./src/modules/lucky-draw/lucky-draw.controller")
+const luckydrawController = require("./src/modules/lucky-draw/lucky-draw.controller");
 const authController = require("./src/modules/auth/auth.controller");
 const {verifyTokenMiddleware} = require("./src/modules/auth/auth.service");
 const PORT = process.env.PORT || 3000;
