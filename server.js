@@ -5,7 +5,7 @@ const cors = require("cors");
 dotEnv.config()
 const {connectDatabase} = require("./src/modules/database/database-connection");
 const luckydrawController = require("./src/modules/lucky-draw/lucky-draw.controller")
-const authControler = require("./src/modules/auth/auth.controller");
+const authController = require("./src/modules/auth/auth.controller");
 const {verifyTokenMiddleware} = require("./src/modules/auth/auth.service");
 const PORT = process.env.PORT || 3000;
 
@@ -20,7 +20,7 @@ app.use((req, res, next) => {
     }
 });
 
-app.use("/api/auth", authControler)
+app.use("/api/auth", authController)
 app.use("/api/lucky-draw", luckydrawController)
 
 app.use((error, req, res, next) => {
