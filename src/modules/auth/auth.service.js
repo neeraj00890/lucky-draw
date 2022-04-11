@@ -11,7 +11,6 @@ function verifyToken(token) {
     } catch (error) {
         throw new ApplicationError(HTTP_STATUS.NOT_AUTHORIZED, EMPTY_STRING, error.message);
     }
-    
 }
 
 exports.getToken = async function (args) {
