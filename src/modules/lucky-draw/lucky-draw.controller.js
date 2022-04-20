@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const { HTTP_STATUS } = require("../common/common-constants");
 
-const { initializeWinningPrize, redeemPrize } = require("./lucky-draw.service");
+const { initializeWinningPrize, redeemPrize, fetchGoldSilverUsers } = require("./lucky-draw.service");
 
 router.post("/init",  async (req, res, next) => {
   try {
@@ -24,4 +24,12 @@ router.get("/redeem", async (req, res, next) => {
   }
 });
 
+router.get("/gold-silver-users", async (req, res, next) => {
+  try {
+    const data = await fetchGoldSilverUsers();
+    return res.send({ data });
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send({ message: error.message });
+  }
+});
 module.exports = router;
