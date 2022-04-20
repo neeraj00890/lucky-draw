@@ -117,7 +117,7 @@ exports.redeemPrize = async function (address) {
 
 exports.fetchGoldSilverUsers = async function() {
 const data =  await LuckydrawRedemption.find({
-    $or: [{winningType: WINNING_TYPES.GOLD}, {winningType: WINNING_TYPES.GOLD}]
+    $or: [{winningType: WINNING_TYPES.SILVER}, {winningType: WINNING_TYPES.GOLD}]
   }, {address: 1, winningType: 1})
   return data;
 }
