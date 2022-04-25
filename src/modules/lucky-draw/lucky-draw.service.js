@@ -124,7 +124,7 @@ exports.redeemPrize = async function (address) {
   const res = await checkAlready(address);
   if (res !== null) {
     console.log("Returning present value");
-    returnObject.winningType = res.winningType;
+    returnObject.winningType = res;
     return returnObject;
   }
   const winningPrizes = await WinningPrice.findOne({});
