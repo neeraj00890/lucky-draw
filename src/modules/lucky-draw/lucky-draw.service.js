@@ -3,7 +3,8 @@ const { getRandomNumber, getRandomNumberFromArray } = require("../common/common.
 const { NUMBER_THOUSAND, WINNING_TYPES } = require("../common/common-constants");
 const messages = require("../common/response-messages");
 
-const WinningPrice = require("./winning-prize.model");
+const WinningPrize = require("./winning-prize.model");
+const Race = require("./race.model");
 const LuckydrawRedemption = require("./lucky-draw-redemption.model");
 
 function getGoldList() {
@@ -26,10 +27,11 @@ function getBrownList(blackListNumbers) {
   return oneToThousand.filter(number => !blackListNumbers.includes(number));
 }
 
-async function handleGoldWinner(address, winningPrizes, randomNumber) {
+async function handleGoldWinner(address, winningPrizes, randomNumber, race) {
   const returnObject = {}
   returnObject.winningType = WINNING_TYPES.GOLD;
       await LuckydrawRedemption.create({
+        race,
         address,
         winningType: WINNING_TYPES.GOLD,
         winningNumber: randomNumber
@@ -39,10 +41,11 @@ async function handleGoldWinner(address, winningPrizes, randomNumber) {
       return returnObject;
 }
 
-async function handleSilverWinner(address, winningPrizes, randomNumber) {
+async function handleSilverWinner(address, winningPrizes, randomNumber, race) {
   const returnObject = {}
   returnObject.winningType = WINNING_TYPES.SILVER;
       await LuckydrawRedemption.create({
+        race,
         address,
         winningType: WINNING_TYPES.SILVER,
         winningNumber: randomNumber
@@ -52,10 +55,11 @@ async function handleSilverWinner(address, winningPrizes, randomNumber) {
       return returnObject;
 }
 
-async function handleBrownWinner(address, winningPrizes, randomNumber) {
+async function handleBrownWinner(address, winningPrizes, randomNumber, race) {
   const returnObject = {}
   returnObject.winningType = WINNING_TYPES.BROWN;
       await LuckydrawRedemption.create({
+        race,
         address,
         winningType: WINNING_TYPES.BROWN,
         winningNumber: randomNumber
@@ -65,25 +69,40 @@ async function handleBrownWinner(address, winningPrizes, randomNumber) {
       return returnObject;
 }
 
-exports.initializeWinningPrize = async function () {
-  const  initialCount = await WinningPrice.countDocuments({});
-  console.log(initialCount)
-  if(initialCount > 0) {
+exports.initializeWinningPrize = async function (args) {
+  let { races } = args; // "ABC,XYZ,"
+  const  initialCount = await Race.countDocuments({});
+  if(initialCount) {
     return {
       message: messages.DATA_EXISTS
     }
   }
-   
-  const goldPrizes = getGoldList();
-  const silverPrizes = getSilverList(goldPrizes);
-  const brownPrizes = getBrownList([...silverPrizes, ...goldPrizes]);
-  await WinningPrice.create({
-    goldPrizes,
-    silverPrizes,
-    brownPrizes,
-    availableGoldPrizes: goldPrizes,
-    availableSilverPrizes: silverPrizes,
-    availablebrownPrizes: brownPrizes
+
+  const racesCreate = [];
+  races =  races.split(",");
+  for(const race of races) {
+    const goldPrizes = getGoldList();
+    const silverPrizes = getSilverList(goldPrizes);
+    const brownPrizes = getBrownList([...silverPrizes, ...goldPrizes]);
+   const winingPrize = await WinningPrize.create({
+     race,
+      goldPrizes,
+      silverPrizes,
+      brownPrizes,
+      availableGoldPrizes: goldPrizes,
+      availableSilverPrizes: silverPrizes,
+      availablebrownPrizes: brownPrizes
+    });
+    racesCreate.push(
+      {
+        name: race,
+        prizes: winingPrize
+      }
+    );
+  }
+
+   await Race.create({
+    races: racesCreate
   });
 
   return {
@@ -91,9 +110,19 @@ exports.initializeWinningPrize = async function () {
   }
 };
 
-exports.redeemPrize = async function (address) {
+
+exports.redeemPrize = async function (address, race) {
   let returnObject = {};
-  const winningPrizes = await WinningPrice.findOne({});
+  const existingPrize =  await LuckydrawRedemption.findOne({ address, race });
+  if(existingPrize) {
+    returnObject.winningType = existingPrize.winningType;
+    returnObject.message = messages.ALREADY_REDEEM;
+    return returnObject;
+  }
+  const winningPrizes = await WinningPrize.findOne({race});
+  if(!winningPrizes) {
+    throw new Error(`Prizes corresponding to ${race} does not exists`);
+  }
   const totalAvailableNumbers = [...winningPrizes.availableGoldPrizes, ...winningPrizes.availableSilverPrizes, ...winningPrizes.availablebrownPrizes];
   if(totalAvailableNumbers.length) {
     const randomNumber = getRandomNumberFromArray(totalAvailableNumbers);
@@ -102,21 +131,22 @@ exports.redeemPrize = async function (address) {
     const isBrownWinner = winningPrizes.availablebrownPrizes.includes(randomNumber);
     console.log(address, isBrownWinner, isSilverWinner, isGoldWinner, randomNumber)
     if (isGoldWinner) {
-      returnObject = await handleGoldWinner(address, winningPrizes, randomNumber);
+      returnObject = await handleGoldWinner(address, winningPrizes, randomNumber, race);
     } else if (isSilverWinner) {
-      returnObject = await handleSilverWinner(address, winningPrizes, randomNumber);
+      returnObject = await handleSilverWinner(address, winningPrizes, randomNumber, race);
     }
     else if (isBrownWinner) {
-      returnObject = await handleBrownWinner(address, winningPrizes, randomNumber)
+      returnObject = await handleBrownWinner(address, winningPrizes, randomNumber, race)
     } 
   } else {
-    returnObject.winningType = 'NONE(No Number Available)';
+    returnObject.winningType = "NONE(No Number Available)";
   }
  return returnObject;
 };
 
-exports.fetchGoldSilverUsers = async function() {
+exports.fetchGoldSilverUsers = async function(race) {
 const data =  await LuckydrawRedemption.find({
+    race,
     $or: [{winningType: WINNING_TYPES.SILVER}, {winningType: WINNING_TYPES.GOLD}]
   }, {address: 1, winningType: 1})
   return data;

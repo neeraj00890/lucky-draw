@@ -1,6 +1,13 @@
 const mongoose = require("mongoose");
 
 const winningPrizeSchema = new mongoose.Schema({
+  race: {
+    type: String,
+    trim: true,
+    required: true,
+    unique: true
+
+  },
   goldPrizes: {
     type: [String],
     default: [],

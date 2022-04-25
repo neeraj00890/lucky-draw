@@ -7,7 +7,7 @@ const { initializeWinningPrize, redeemPrize, fetchGoldSilverUsers } = require(".
 
 router.post("/init",  async (req, res, next) => {
   try {
-   const data = await initializeWinningPrize();
+   const data = await initializeWinningPrize(req.body);
     return res.send({ message: data.message });
   } catch (error) {
     return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send({ message: error.message });
@@ -16,8 +16,8 @@ router.post("/init",  async (req, res, next) => {
 
 router.get("/redeem", async (req, res, next) => {
   try {
-    const { address } = req.query;
-    const data = await redeemPrize(address);
+    const { address, race } = req.query;
+    const data = await redeemPrize(address, race);
     return res.send({ data });
   } catch (error) {
     return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send({ message: error.message });
@@ -26,7 +26,8 @@ router.get("/redeem", async (req, res, next) => {
 
 router.get("/gold-silver-users", async (req, res, next) => {
   try {
-    const data = await fetchGoldSilverUsers();
+    const race = req.body;
+    const data = await fetchGoldSilverUsers(race);
     return res.send({ data });
   } catch (error) {
     return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).send({ message: error.message });

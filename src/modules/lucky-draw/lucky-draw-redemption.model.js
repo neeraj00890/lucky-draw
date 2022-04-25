@@ -9,6 +9,11 @@ const luckydrawRedemptionSchema = new mongoose.Schema({
  },
  winningNumber: {
      type: Number
+ },
+ race: {
+     type: String,
+     trim: true,
+     required: true
  }
 });
 
