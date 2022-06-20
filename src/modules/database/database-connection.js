@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 exports.connectDatabase = () => {
-  mongoose.connect(process.env.DB_URI, {
+  mongoose.connect("mongodb://localhost:27017/blocksport", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });

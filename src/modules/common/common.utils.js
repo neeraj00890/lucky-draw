@@ -1,7 +1,6 @@
-const  {NUMBER_THOUSAND} = require("./common-constants")
 
-exports.getRandomNumber = () => {
-    return Math.floor(Math.random() * NUMBER_THOUSAND) + 1;
+exports.getRandomNumber = (numbers) => {
+    return Math.floor(Math.random() * numbers) + 1;
 }
 
 exports.getRandomNumberFromArray = (array) => {

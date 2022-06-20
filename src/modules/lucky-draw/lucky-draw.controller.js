@@ -26,7 +26,7 @@ router.get("/redeem", async (req, res, next) => {
 
 router.get("/gold-silver-users", async (req, res, next) => {
   try {
-    const race = req.body;
+    const {race} = req.query;
     const data = await fetchGoldSilverUsers(race);
     return res.send({ data });
   } catch (error) {
